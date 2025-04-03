@@ -5,6 +5,7 @@ import ChallengesSection from './components/ChallengesSection';
 import SettingsSection from './components/SettingsSection';
 import Hero from './components/Hero';
 import Navigation from './components/Navigation';
+import StudySection from './components/StudySelection';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -17,6 +18,8 @@ function App() {
         return <JournalSection />;
       case 'challenges':
         return <ChallengesSection />;
+        case 'study':
+        return <StudySection />;
       case 'settings':
         return <SettingsSection />;
       default:
@@ -39,6 +42,6 @@ function App() {
       </main>
     </div>
   );
-}
+};
 
 export default App;

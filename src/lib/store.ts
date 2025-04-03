@@ -23,6 +23,25 @@ interface Challenge {
   lastUpdated: string;
 }
 
+interface StudySession {
+  id: string;
+  subject: string;
+  topic: string;
+  duration: number;
+  date: string;
+  completed: boolean;
+  notes: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
+interface StudySubject {
+  id: string;
+  name: string;
+  color: string;
+  totalHours: number;
+  targetHours: number;
+}
+
 interface Settings {
   notifications: boolean;
   darkMode: boolean;
@@ -35,18 +54,32 @@ interface Store {
   // Moods
   moods: Mood[];
   addMood: (mood: string, note: string) => void;
+  deleteMood: (id: string) => void;
   getMoodHistory: () => Mood[];
   
   // Journal
   entries: JournalEntry[];
   addEntry: (content: string, stickers: string[], isDraft: boolean) => void;
   updateEntry: (id: string, content: string, stickers: string[], isDraft: boolean) => void;
+  deleteEntry: (id: string) => void;
   getEntries: () => JournalEntry[];
   
   // Challenges
   challenges: Record<number, Challenge>;
   updateChallenge: (id: number, progress: number) => void;
   getPoints: () => number;
+  
+  // Study Planner
+  studySessions: StudySession[];
+  subjects: StudySubject[];
+  addStudySession: (session: Omit<StudySession, 'id'>) => void;
+  updateStudySession: (id: string, session: Partial<StudySession>) => void;
+  deleteStudySession: (id: string) => void;
+  addSubject: (subject: Omit<StudySubject, 'id'>) => void;
+  updateSubject: (id: string, subject: Partial<StudySubject>) => void;
+  deleteSubject: (id: string) => void;
+  getStudySessions: () => StudySession[];
+  getSubjects: () => StudySubject[];
   
   // Settings
   settings: Settings;
@@ -66,6 +99,9 @@ export const useStore = create<Store>()(
           date: format(new Date(), 'yyyy-MM-dd')
         }]
       })),
+      deleteMood: (id: string) => set((state) => ({
+        moods: state.moods.filter(mood => mood.id !== id)
+      })),
       getMoodHistory: () => get().moods,
 
       // Journal
@@ -83,6 +119,9 @@ export const useStore = create<Store>()(
         entries: state.entries.map(entry =>
           entry.id === id ? { ...entry, content, stickers, isDraft } : entry
         )
+      })),
+      deleteEntry: (id: string) => set((state) => ({
+        entries: state.entries.filter(entry => entry.id !== id)
       })),
       getEntries: () => get().entries,
 
@@ -108,6 +147,41 @@ export const useStore = create<Store>()(
         const { challenges } = get();
         return Object.values(challenges).reduce((total, challenge) => total + challenge.progress * 10, 0);
       },
+
+      // Study Planner
+      studySessions: [],
+      subjects: [],
+      addStudySession: (session) => set((state) => ({
+        studySessions: [...state.studySessions, {
+          ...session,
+          id: crypto.randomUUID()
+        }]
+      })),
+      updateStudySession: (id, session) => set((state) => ({
+        studySessions: state.studySessions.map(s =>
+          s.id === id ? { ...s, ...session } : s
+        )
+      })),
+      deleteStudySession: (id) => set((state) => ({
+        studySessions: state.studySessions.filter(s => s.id !== id)
+      })),
+      addSubject: (subject) => set((state) => ({
+        subjects: [...state.subjects, {
+          ...subject,
+          id: crypto.randomUUID()
+        }]
+      })),
+      updateSubject: (id, subject) => set((state) => ({
+        subjects: state.subjects.map(s =>
+          s.id === id ? { ...s, ...subject } : s
+        )
+      })),
+      deleteSubject: (id) => set((state) => ({
+        subjects: state.subjects.filter(s => s.id !== id),
+        studySessions: state.studySessions.filter(s => s.subject !== id)
+      })),
+      getStudySessions: () => get().studySessions,
+      getSubjects: () => get().subjects,
 
       // Settings
       settings: {
