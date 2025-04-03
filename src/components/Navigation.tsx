@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Book, Smile, Trophy, Settings } from 'lucide-react';
+import { Home, Book, Smile, Trophy, Settings, GraduationCap } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -12,6 +12,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange 
     { icon: Book, label: 'Journal', id: 'journal' },
     { icon: Smile, label: 'Mood', id: 'mood' },
     { icon: Trophy, label: 'Challenges', id: 'challenges' },
+    { icon: GraduationCap, label: 'Study', id: 'study' },
     { icon: Settings, label: 'Settings', id: 'settings' },
   ];
 
@@ -21,7 +22,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange 
         <div className="flex items-center justify-between h-16">
           <button 
             onClick={() => onSectionChange('home')}
-            className="flex-shrink-0 font-handwriting text-2xl text-pink-300 hover:scale-105 transition-transform"
+            className="flex-shrink-0 font-serif text-2xl text-pink-300 hover:scale-105 transition-transform"
           >
             MoodBloom
           </button>
@@ -33,7 +34,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange 
                 className={`flex flex-col items-center p-2 transition-all transform hover:scale-105
                   ${activeSection === id 
                     ? 'text-pink-300 scale-105' 
-                    : 'text-gray-600 hover:text-pink-300'}`}
+                    : 'text-gray-500 hover:text-pink-300'}`}
               >
                 <Icon className="h-6 w-6" />
                 <span className="text-xs mt-1">{label}</span>
@@ -46,4 +47,4 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange 
   );
 };
 
-export default Navigation;
+export default Navigation

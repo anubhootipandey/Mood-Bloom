@@ -1,5 +1,5 @@
-import  { useState } from 'react';
-import { Smile, Frown, Meh, Heart, Star, Sun, Cloud, CloudRain, CloudLightning, Moon } from 'lucide-react';
+import { useState } from 'react';
+import { Smile, Frown, Meh, Heart, Star, Sun, Cloud, CloudRain, CloudLightning, Moon, Trash2, X } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { format, subDays } from 'date-fns';
 
@@ -20,8 +20,10 @@ const MoodSection = () => {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   
-  const { addMood, getMoodHistory } = useStore();
+  const { addMood, getMoodHistory, deleteMood } = useStore();
   const moodHistory = getMoodHistory();
 
   const handleSaveMood = () => {
@@ -32,6 +34,13 @@ const MoodSection = () => {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
+  };
+
+  const handleDelete = (id: string) => {
+    deleteMood(id);
+    setShowDeleteConfirm(null);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const getMoodIcon = (moodLabel: string) => {
@@ -46,6 +55,7 @@ const MoodSection = () => {
   }).reverse();
 
   return (
+    <div className='bg-gradient-to-t from-green-100 via-rose-100 to-purple-100'>
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
         <h2 className="font-handwriting text-3xl text-gray-700 mb-8 text-center">
@@ -58,9 +68,9 @@ const MoodSection = () => {
               key={label}
               onClick={() => setSelectedMood(label)}
               className={`group flex flex-col items-center p-4 rounded-xl transition-all transform hover:scale-105
-                ${selectedMood === label ? `${bg} shadow-lg scale-105` : 'bg-white shadow'}`}
+                ${selectedMood === label ? `${bg} shadow-lg scale-105` : 'bg-white shadow hover:shadow-lg'}`}
             >
-              <div className={`p-4 rounded-full transition-all ${color}`}>
+              <div className={`p-4 rounded-full transition-all ${color} group-hover:scale-110`}>
                 <Icon className="h-8 w-8" />
               </div>
               <span className="mt-2 font-handwriting text-gray-600">{label}</span>
@@ -77,21 +87,29 @@ const MoodSection = () => {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Write your thoughts here..."
-              className="w-full p-4 rounded-xl bg-white/50 border border-gray-200 focus:ring-2 focus:ring-pink-200 focus:border-transparent transition-all"
+              className="w-full p-4 rounded-xl bg-white/50 border border-gray-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
               rows={4}
             />
-            <button 
-              onClick={handleSaveMood}
-              className="mt-4 bg-pink-200 hover:bg-purple-200 text-gray-700 font-semibold py-2 px-6 rounded-full shadow-md transform transition hover:scale-105"
-            >
-              Save Entry
-            </button>
+            <div className="mt-4 flex justify-end space-x-4">
+              <button
+                onClick={() => setSelectedMood(null)}
+                className="px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveMood}
+                className="px-6 py-2 rounded-full bg-pink-200 text-gray-700 hover:bg-purple-200 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+              >
+                Save Entry
+              </button>
+            </div>
           </div>
         )}
 
         {showSuccess && (
           <div className="mt-4 p-4 bg-green-200/20 text-green-300 rounded-lg text-center animate-fade-in">
-            Mood saved successfully!
+            {showDeleteConfirm ? 'Mood deleted successfully!' : 'Mood saved successfully!'}
           </div>
         )}
       </div>
@@ -102,27 +120,74 @@ const MoodSection = () => {
           {last7Days.map(({ date, mood }) => {
             const Icon = mood ? getMoodIcon(mood.mood) : Meh;
             const moodData = moods.find(m => m.label === mood?.mood);
+            const isSelected = selectedDate === date;
             
             return (
               <div key={date} className="flex flex-col items-center">
-                <div className={`aspect-square w-full rounded-lg ${mood ? moodData?.bg : 'bg-gray-100'} 
-                  flex items-center justify-center transition-all hover:scale-105 cursor-pointer group`}
+                <div
+                  onClick={() => setSelectedDate(isSelected ? null : date)}
+                  className={`aspect-square w-full rounded-lg ${mood ? moodData?.bg : 'bg-gray-100'} 
+                    flex items-center justify-center transition-all hover:scale-105 cursor-pointer group
+                    ${isSelected ? 'ring-2 ring-pink-400 scale-105' : ''}`}
                 >
                   <Icon className={`h-6 w-6 ${mood ? moodData?.color : 'text-gray-300'}`} />
-                  {mood?.note && (
-                    <div className="absolute invisible group-hover:visible bg-white p-2 rounded shadow-lg text-sm z-10">
-                      {mood.note}
-                    </div>
+                  {mood && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDeleteConfirm(mood.id);
+                      }}
+                      className="absolute invisible group-hover:visible bg-white p-1 rounded-full shadow-lg hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-400" />
+                    </button>
                   )}
                 </div>
                 <span className="text-xs text-gray-500 mt-1">
                   {format(new Date(date), 'MMM d')}
                 </span>
+                {isSelected && mood?.note && (
+                  <div className="absolute mt-12 bg-white p-4 rounded-lg shadow-xl z-10 w-64 animate-fade-in">
+                    <button
+                      onClick={() => setSelectedDate(null)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <p className="text-sm text-gray-600 mt-2">{mood.note}</p>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm mx-4 animate-fade-in">
+            <h4 className="text-xl font-semibold mb-4">Delete Mood Entry?</h4>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this mood entry? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(showDeleteConfirm)}
+                className="px-4 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
     </div>
   );
 };

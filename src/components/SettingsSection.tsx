@@ -79,6 +79,7 @@ const SettingsSection = () => {
   }, [userSettings.darkMode]);
 
   return (
+    <div className='bg-gradient-to-t from-rose-100 via-purple-100 to-green-100'>
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
         <h2 className="font-handwriting text-3xl text-gray-700 mb-8">Settings</h2>
@@ -148,6 +149,7 @@ const SettingsSection = () => {
         )}
       
       </div>
+    </div>
     </div>
   );
 };
