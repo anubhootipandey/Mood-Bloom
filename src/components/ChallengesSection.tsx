@@ -85,6 +85,7 @@ const ChallengesSection = () => {
   };
 
   return (
+    <div className='bg-gradient-to-b from-sky-50 via-rose-100 to-purple-100'>
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
         <div className="flex items-center justify-between mb-8">
@@ -155,6 +156,7 @@ const ChallengesSection = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };
