@@ -196,7 +196,7 @@ const StudySection = () => {
                         <Clock className="h-4 w-4 text-gray-400" />
                         <span className="text-sm text-gray-600">{session.duration}min</span>
                       </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col md:flex-row space-x-2">
                         <button
                           onClick={() => toggleSessionComplete(session.id, !session.completed)}
                           className={`p-1 rounded-full ${

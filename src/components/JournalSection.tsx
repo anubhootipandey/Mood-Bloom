@@ -69,12 +69,12 @@ const JournalSection = () => {
     <div className='bg-gradient-to-t from-pink-100 via-rose-100 to-green-100'>
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row gap-1 justify-between mb-6">
           <h2 className="font-handwriting text-3xl text-gray-700">
             {editingId ? 'Edit Journal Entry' : 'New Journal Entry'}
           </h2>
-          <div className="flex items-center text-gray-600">
-            <Calendar className="h-5 w-5 mr-2" />
+          <div className="flex items-center text-sm md:text-[16px] text-gray-400">
+            <Calendar className="h-4 w-4 mr-2" />
             {format(new Date(), 'EEEE, MMMM d, yyyy')}
           </div>
         </div>
@@ -108,28 +108,29 @@ const JournalSection = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end space-x-4">
+        <div className="mt-6 flex flex-col sm:flex-row sm:justify-end items-center sm:space-x-4 gap-2">
           {editingId && (
             <button 
               onClick={clearForm}
-              className="px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+              className="w-full sm:w-auto px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
             >
               Cancel
             </button>
           )}
           <button 
             onClick={() => handleSave(true)}
-            className="px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+            className="w-full sm:w-auto px-6 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
           >
             Save as Draft
           </button>
           <button 
             onClick={() => handleSave(false)}
-            className="px-6 py-2 rounded-full bg-pink-200 text-gray-700 hover:bg-purple-200 transition-colors shadow-md"
+            className="w-full sm:w-auto px-6 py-2 rounded-full bg-pink-200 text-gray-700 hover:bg-purple-200 transition-colors shadow-md"
           >
             {editingId ? 'Update Entry' : 'Publish Entry'}
           </button>
         </div>
+
 
         {showSuccess && (
           <div className="mt-4 p-4 bg-green-200/20 text-green-400 rounded-lg text-center animate-fade-in">
